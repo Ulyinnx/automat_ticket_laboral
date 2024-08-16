@@ -134,10 +134,10 @@ def animate_eject(e):
             try:
                 import procesa_tickets
                 procesa_tickets.fun_procesa_tickets(
-                    carga_1 = carga_path_1.value,
-                    carga_2 = carga_path_2.value,
-                    guarda = guarda_path.value,
-                    vboleto = input_text_boleto.value)
+                    carga_1=carga_path_valor_1.value,
+                    carga_2=carga_path_valor_2.value,
+                    guarda=guarda_path.value,
+                    vboleto=input_text_boleto.value)
                 for i in range(valor_aleatorio, 101):
                     progres_bar_eject.value = i * 0.01
                     time.sleep(0.05)
@@ -205,32 +205,38 @@ valor_boleto = ft.Container(
 
 
 # ------------------------------------------  CARGA / GUARDA - FUNCIONES--------------------------------------------
-carga_path_2 = ft.Text("N/A", size=10, color="Black")
-carga_path_1 = ft.Text("N/A", size=10, color="Black")
+carga_path_txt_2 = ft.Text("N/A", size=10, color="Black")
+carga_path_txt_1 = ft.Text("N/A", size=10, color="Black")
 guarda_path = ft.Text("N/A", size=10, color="Black")
+
+carga_path_valor_2 = ft.Text("N/A", size=10, color="Black")
+carga_path_valor_1 = ft.Text("N/A", size=10, color="Black")
 
 def path_picador_2(e: ft.FilePickerResultEvent):
     carga_2 = None
     try:
-        carga_2 = os.path.basename(e.files[0].path)
-        carga_path_2.value = carga_2
-        carga_path_2.update()
+        carga_2 = e.files[0].path
+        print("Nomina:", carga_2)
+        carga_path_txt_2.value = os.path.basename(carga_2)
+        carga_path_valor_2.value = carga_2
+        carga_path_txt_2.update()
     except: None
 
 def path_picador_1(e: ft.FilePickerResultEvent):
     carga = None
     guarda = None
     try:
-        carga_1 = os.path.basename(e.files[0].path)
-        carga_path_1.value = carga_1
-        carga_path_1.update()
+        carga_1 = e.files[0].path
+        print("Tickets:", carga_1)
+        carga_path_txt_1.value = os.path.basename(carga_1)
+        carga_path_valor_1.value = carga_1
+        carga_path_txt_1.update()
     except: None
     try:
-        guarda = os.path.basename(e.path)
-        guarda_path.value = guarda
+        guarda = e.path
+        guarda_path.value = os.path.basename(guarda)
         guarda_path.update()
     except: None
-
 
 def animate_carga_2(e):
     if con_carga_path_2.offset == ft.transform.Offset(-2,0):
@@ -241,9 +247,6 @@ def animate_carga_1(e):
     if con_carga_path_1.offset == ft.transform.Offset(-2,0):
         con_carga_path_1.offset = ft.transform.Offset(0, 0)
         con_carga_path_1.update()
-    # elif con_carga_path_2.offset == ft.transform.Offset(-2,0):
-    #     con_carga_path_2.offset = ft.transform.Offset(0, 0)
-    #     con_carga_path_2.update()
     return path_picador_1(e)
 def animate_guarda(e):
     if con_guarda_path.offset == ft.transform.Offset(-2,0):
@@ -252,7 +255,7 @@ def animate_guarda(e):
     return path_picador_1(e)
 
 con_carga_path_2 = ft.Container(
-    content=carga_path_2,
+    content=carga_path_txt_2,
     bgcolor=colors_app.cont_sec_color,
     alignment=ft.alignment.center,
     width=600,
@@ -270,7 +273,7 @@ con_carga_path_2 = ft.Container(
 )
 
 con_carga_path_1 = ft.Container(
-    content=carga_path_1,
+    content=carga_path_txt_1,
     bgcolor=colors_app.cont_sec_color,
     alignment=ft.alignment.center,
     width=600,

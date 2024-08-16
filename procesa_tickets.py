@@ -5,7 +5,7 @@ import warnings
 # METODO DE CARGA PARA DESAROLLO
 
 # valor_boleto = 45
-# archivo_1 = r"C:\Users\bchavat\Desktop\dev_environments\automat_ticket_laboral\Solicitud de Tickets Alimentación _ Transporte.xlsx"
+# archivo_1 = r"C:\Users\bchavat\Desktop\dev_environments\automat_ticket_laboral\Solicitud de Tickets Alimentación _ Transporte_2.xlsx"
 # archivo_2 = r"C:\Users\bchavat\Desktop\dev_environments\automat_ticket_laboral\Query.xlsx"
 # archivo_salida = r"C:\Users\bchavat\Desktop\dev_environments\automat_ticket_laboral\procesa_ticket2407.xlsx"
 
@@ -78,6 +78,7 @@ def fun_procesa_tickets(carga_1, carga_2, guarda, vboleto):
                        right_on='Número de Funcionario', how='left')
 
     control["control"] = control['Número de colaborador:'] - control['Nº funcionario']
+    control = control.rename(columns={"En caso solicitar boletos que no son urbanos (Montevideo), ingrese el valor:": "valor_dif"})
 
     contador = 0
     for valor_control in control["control"]:
@@ -94,9 +95,14 @@ def fun_procesa_tickets(carga_1, carga_2, guarda, vboleto):
 
     fecha_hoy = datetime.date.today().strftime('%d-%m-%Y')
 
-    control[f"tickets_{fecha_hoy}"] = round(control["Cantidad:"] * (1 + control["Ajuste julio 2016"]) *  (1 + control["Ajuste enero 2017"]) * (1 + control["Ajuste julio 2017"]))
+    control[f"tickets_{fecha_hoy}"] = round(control["Cantidad:"] * (1 + control["Ajuste julio 2016"]) * (1 + control["Ajuste enero 2017"]) * (1 + control["Ajuste julio 2017"]))
 
-    control["Costo"] = valor_boleto
+    control["Costo"] = int(valor_boleto)
+    control["valor_dif"] = control["valor_dif"].fillna(0).astype(int)
+    for index in range(0, len(control["Costo"])):
+        if control.loc[index, "valor_dif"] != 0:
+            control.loc[index, "Costo"] = control.loc[index, "valor_dif"]
+
     control["Monto"] = control[f"tickets_{fecha_hoy}"] * control["Costo"]
 
     final = control[['Usuario',
